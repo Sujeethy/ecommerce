@@ -54,7 +54,7 @@ const LoginForm = () => {
           <div className='pt-9 font-semibold leading-7 text-2xl'>Welcome back to ECOMMERCE</div>
           <div className='pt-3 '>The next gen business marketplace</div>
 
-          <div className="flex flex-col items-start w-64 flex-wrap content-around pt-8">
+          <div className="flex flex-col items-start  flex-wrap content-around pt-8">
             <label htmlFor="name" className="text-gray-600 pb-2 font-inter text-base font-normal leading-5 text-left">Email</label>
             <input
               type="text"

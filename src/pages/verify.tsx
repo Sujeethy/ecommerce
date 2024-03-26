@@ -26,7 +26,7 @@ const Login = () => {
   
     if (string === "12345678") {
       console.log("success");
-      if (data != null) { // Check if data is not null
+      if (data != null) { 
         try {
           const dat = await createUserMutation.mutateAsync({
             name: data.name,
@@ -42,7 +42,7 @@ const Login = () => {
         }
       } else {
         console.error('Data is null');
-        // Handle the case where data is null
+       
       }
     } else {
       alert("Incorrect OTP. Please try again.");

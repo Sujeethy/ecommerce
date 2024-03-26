@@ -8,9 +8,9 @@ generator client {
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
-  // Replace <password> with the actual password for the neondb_owner user
+ 
 }
-// prisma/schema.prisma
+
 
 model User {
   id       Int      @id @default(autoincrement())

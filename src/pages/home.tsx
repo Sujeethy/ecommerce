@@ -12,7 +12,7 @@ interface Category {
 }
 
 export default () => {
-  const [items, setItems] = useState<Category[]>([]); // Initialize items as an empty array of Category
+  const [items, setItems] = useState<Category[]>([]); 
   const router = useRouter();
   const pageParam: string = router.query.page?.toString() === 'undefined' ? '1' : router.query.page?.toString() ?? '1';
 
@@ -47,16 +47,15 @@ export default () => {
       }
     };
     fetchData();
-  }, [currentPage]); // Include 'getcategories' in the dependency array
-
+  }, [currentPage]); 
   const handleToggle = (index: number, id: number) => {
     setItems(prevItems => {
       const updatedItems = [...prevItems];
       const categoryId = id;
       updatedItems[index] = {
         ...updatedItems[index],
-        id: categoryId, // Ensure id is always defined
-        name: updatedItems[index]?.name ?? '', // Ensure name is always defined
+        id: categoryId, 
+        name: updatedItems[index]?.name ?? '', 
         isChecked: !updatedItems[index]?.isChecked
       };
       if (!updatedItems[index]?.isChecked) {

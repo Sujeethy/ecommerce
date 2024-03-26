@@ -1,36 +1,27 @@
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { api } from "~/utils/api";
 import { useRouter } from 'next/router'; 
 import Nav from "~/pages/components/Nb";
 import CheckedIcon from "~/pages/svg/checked";
 import UncheckedIcon from "~/pages/svg/unchecked";
 
+interface Category {
+  id: number;
+  name: string;
+  isChecked: boolean;
+}
+
 export default () => {
-  const [items, setItems] = useState([]);
+  const [items, setItems] = useState<Category[]>([]); // Initialize items as an empty array of Category
   const router = useRouter();
-  const pageParam:string=router.query.page?.toString()==='undefined'?'1':router.query.page?.toString();
-  
+  const pageParam: string = router.query.page?.toString() === 'undefined' ? '1' : router.query.page?.toString() ?? '1';
 
+  const initialPage = pageParam ? parseInt(Array.isArray(pageParam) ? pageParam[0] : pageParam, 10) : 1;
 
+  const [currentPage, setCurrentPage] = useState(initialPage);
 
-const initialPage = pageParam ? parseInt(Array.isArray(pageParam) ? pageParam[0] : pageParam, 10) : 1;
-
-
-const [currentPage, setCurrentPage] = useState(initialPage);
-
-  
-  var userId = 0;
   const pageSize = 6; 
   const maxPagesToShow = 7; 
-   
-
-  if (typeof window !== "undefined") {
-    const storedUserDataString = window.localStorage.getItem('User');
-    if (storedUserDataString) {
-      const storedUserData = JSON.parse(storedUserDataString);
-      userId = storedUserData.id;
-    }
-  }
 
   const getcategories = api.post.getcategories.useMutation();
   const addCategory = api.post.addCategory.useMutation();
@@ -42,38 +33,55 @@ const [currentPage, setCurrentPage] = useState(initialPage);
         const storedUserDataString = window.localStorage.getItem('User');
         if (storedUserDataString) {
           const storedUserData = JSON.parse(storedUserDataString);
-          userId = storedUserData.id;
+          const userId = storedUserData.id;
           
-          const data = await getcategories.mutateAsync({ userId, page: currentPage });
-          setItems(data.categories); 
+          const data = await getcategories.mutateAsync({ userId, page: currentPage }) as { categories: Category[] };
+          if (data && Array.isArray(data.categories)) {
+            setItems(data.categories);
+          } else {
+            console.error('Error: Data does not contain categories or is not in the expected format');
+          }
         }
       } catch (error) {
         console.error('Error fetching data:', error);
       }
     };
     fetchData();
-  }, [currentPage]);
+  }, [currentPage]); // Include 'getcategories' in the dependency array
 
-  const handleToggle = (index:number, id:number) => {
+  const handleToggle = (index: number, id: number) => {
     setItems(prevItems => {
       const updatedItems = [...prevItems];
       const categoryId = id;
       updatedItems[index] = {
         ...updatedItems[index],
-        isChecked: !updatedItems[index].isChecked 
+        id: categoryId, // Ensure id is always defined
+        name: updatedItems[index]?.name ?? '', // Ensure name is always defined
+        isChecked: !updatedItems[index]?.isChecked
       };
-      if (!updatedItems[index].isChecked) {
-        removeCategory.mutateAsync({ userId, categoryId });
+      if (!updatedItems[index]?.isChecked) {
+        removeCategory.mutateAsync({ userId: getUserId(), categoryId });
       } else {
-        addCategory.mutateAsync({ userId, categoryId });
+        addCategory.mutateAsync({ userId: getUserId(), categoryId });
       }
       return updatedItems;
     });
   };
+  
+  const getUserId = () => {
+    if (typeof window !== "undefined") {
+      const storedUserDataString = window.localStorage.getItem('User');
+      if (storedUserDataString) {
+        const storedUserData = JSON.parse(storedUserDataString);
+        return storedUserData.id;
+      }
+    }
+    return 0;
+  };
 
   const totalPages = Math.ceil(100 / pageSize);
 
-  const handlePageChange = (newPage) => {
+  const handlePageChange = (newPage:number) => {
     if (newPage >= 1 && newPage <= totalPages) {
       setCurrentPage(newPage);
       router.push({ pathname: '/home', query: { page: newPage } }); 
@@ -106,7 +114,6 @@ const [currentPage, setCurrentPage] = useState(initialPage);
     }
     return pageNumbers;
   };
-
   return (
     <div>
       <Nav />
@@ -118,7 +125,7 @@ const [currentPage, setCurrentPage] = useState(initialPage);
             <div>My saved interests!</div>
             {items.map((item, index) => (
               <div key={item.id} className="h-6 flex flex-row content-center" onClick={() => handleToggle(index, item.id)}>
-                {item.isChecked ? <CheckedIcon /> : <UncheckedIcon />}
+                {item.isChecked? <CheckedIcon /> : <UncheckedIcon />}
                 <span className="text-base pl-3">{item.name}</span>
               </div>
             ))}
@@ -127,9 +134,8 @@ const [currentPage, setCurrentPage] = useState(initialPage);
             <button onClick={() => handlePageChange(1)}>{"<<"}</button>
             <button onClick={() => handlePageChange(currentPage - 1)}>{"<"}</button>
             {getPageNumbers().map((page, index) => (
-
-              page==currentPage?<button key={index} className="text-black text-xl"onClick={() => handlePageChange(page)}>{page}</button>:
-              <button key={index} className="text-[#ACACAC] text-xl" onClick={() => handlePageChange(page)}>{page}</button>
+              page===currentPage?<button key={index} className="text-black text-xl" onClick={() => handlePageChange(typeof page === 'string' ? parseInt(page, 10) : page)}>{page}</button>:
+              <button key={index} className="text-[#ACACAC] text-xl" onClick={() => handlePageChange(typeof page === 'string' ? parseInt(page, 10) : page)}>{page}</button>
             ))}
             <button onClick={() => handlePageChange(currentPage + 1)}>{">"}</button>
             <button onClick={() => handlePageChange(totalPages)}>{">>"}</button>
@@ -137,5 +143,4 @@ const [currentPage, setCurrentPage] = useState(initialPage);
         </div>
       </div>
     </div>
-  );
-};
+  )};

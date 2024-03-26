@@ -51,7 +51,7 @@ export const postRouter = createTRPCRouter({
       
       return { error: "Incorrect password" };
     }
-    delete user.password
+    user.password = "";
     
     return { error: "Success", user };
     }),

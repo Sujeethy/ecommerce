@@ -69,7 +69,7 @@ const [error,setError]=useState("");
       if (error!=""){
         setError('Email already exists');
       };
-    } catch (error) {
+    } catch (error:any) {
         
       console.error(error.message);
       

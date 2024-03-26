@@ -12,43 +12,43 @@ const Login = () => {
   const [otpValue, setOtpValue] = useState(""); 
   const router = useRouter();
   const [error,setError]=useState("");
-  let data = null;
+  let data: { name: string, email: string, password: string } | null = null;
 
 
   const handleVerify = async () => {
-
     const inputs = document.getElementsByTagName("input");
-
-
     const inputArray = Array.from(inputs);
     let string = "";
-    
-
+  
     inputArray.forEach((input, index) => {
-       string += input.value;
+      string += input.value;
     });
-
+  
     if (string === "12345678") {
-      
       console.log("success");
-      try {
-       
-
-        const dat = await createUserMutation.mutateAsync({name:data.name,email:data.email,password:data.password,verifed:true});
-
-        window.location.href = '/';
-        setError("success")
-        localStorage.removeItem('verify');
-      } catch (error) {
-        console.error('An error occurred:', error);
-
+      if (data != null) { // Check if data is not null
+        try {
+          const dat = await createUserMutation.mutateAsync({
+            name: data.name,
+            email: data.email,
+            password: data.password,
+            verifed: true
+          });
+          window.location.href = '/';
+          setError("success");
+          localStorage.removeItem('verify');
+        } catch (error) {
+          console.error('An error occurred:', error);
+        }
+      } else {
+        console.error('Data is null');
+        // Handle the case where data is null
       }
     } else {
       alert("Incorrect OTP. Please try again.");
     }
   };
   
-
 
   
 

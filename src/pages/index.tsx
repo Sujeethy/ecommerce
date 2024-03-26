@@ -21,7 +21,7 @@ const LoginForm = () => {
     setShowPassword(!showPassword);
   };
 
-  const handleLogin = async (e) => {
+  const handleLogin = async (e: { preventDefault: () => void; }) => {
     e.preventDefault();
     if (email === "") {
       setError("Email is required");

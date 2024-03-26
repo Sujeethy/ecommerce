@@ -1,0 +1,27 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = "postgresql://neondb_owner:Joj3eQT4WONR@ep-spring-glitter-a1la7l56.ap-southeast-1.aws.neon.tech/neondb?sslmode=require"
+  // Replace <password> with the actual password for the neondb_owner user
+}
+// prisma/schema.prisma
+
+model User {
+  id       Int      @id @default(autoincrement())
+  name     String
+  email    String   @unique
+  password String
+  categories Category[]
+}
+
+model Category {
+  id   Int    @id @default(autoincrement())
+  name String
+  users User[]
+}

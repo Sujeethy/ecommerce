@@ -12,7 +12,7 @@ export const env = createEnv({
       .url()
       .refine(
         (str) => !str.includes("postgresql://neondb_owner:Joj3eQT4WONR@ep-spring-glitter-a1la7l56.ap-southeast-1.aws.neon.tech/neondb?sslmode=require"),
-        "You forgot to change the default URL"
+        
       ),
     NODE_ENV: z
       .enum(["development", "test", "production"])

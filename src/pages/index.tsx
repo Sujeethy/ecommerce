@@ -66,7 +66,7 @@ const LoginForm = () => {
             />
           </div>
 
-          <div className="flex flex-col items-start w-64 flex-wrap content-around pt-8">
+          <div className="flex flex-col items-start  flex-wrap content-around pt-8">
             <label htmlFor="password" className="text-gray-600 pb-2 font-inter text-base font-normal leading-5 text-left">Password</label>
             <div className="relative">
               <input
